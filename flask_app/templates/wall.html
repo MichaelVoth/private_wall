@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="container">
+            <div id="header"></div>
+            <div id="content">
+                <div class="xlg_col">
+                    <div class="nav">
+                        <h1>Private Wall</h1>
+                        <div>
+                            <h3>Welcome,
+                                {%for user in users %}
+                                {%if user.id == session['user_id']%}
+                                {{user.first_name}}!
+                                {%endif%}
+                                {%endfor%}</h3>
+                            <a href="/logout">Logout</a>
+                        </div>
+                    </div>
+                    <div class="flex">
+
+                        <div class="col">
+                            <h4>Messages for you:</h4>
+                            <p>You have {{recieved_count}} Messages</p>
+                            {% for a_message in messages %}
+                            <fieldset>
+                                <p>{{a_message.sender.first_name}} said {{a_message.created_at | time_since }}</p>
+                                <h3>{{a_message.message}}</h3><br>
+                                <form action="/delete" method="post">
+                                    <input type="hidden" name="id" value="{{a_message.id}}">
+                                    <input type="submit" value="Delete">
+                                </form>
+                            </fieldset>
+                            {%endfor%}
+                        </div>
+
+                        <div class="col">
+                            <h4>Send messages:</h4>
+                            <p>You have sent {{count}} messages:</p>
+                            <table>
+                                {%for user in users%}
+                                {%if user.id == session['user_id']%}
+                                {%else%}
+                                <tr>
+                                    <form action="/send" method="post">
+                                        <td>{{user.first_name}}</td>
+                                        <td>
+                                            <input type="hidden" name="recipient_id" value="{{user.id}}">
+                                            <input type="hidden" name="sender_id" value="{{session['user_id']}}">
+                                            <input type="text" name="message" id="message">
+                                        </td>
+                                        <td><input type="submit" value="Send"></td>
+                                    </form>
+                                    {% with messages = get_flashed_messages(category_filter=["message"]) %}
+                                        {% if messages %}
+                                        {% for message in messages %}
+                                        <p class="error">{{message}}</p>
+                                        {% endfor %}
+                                        {% endif %}
+                                        {% endwith %}
+                                </tr>
+                                {%endif%}
+                                {%endfor%}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="footer">
+            </div>
+        </div>
+</body>
+
+
+</html>
