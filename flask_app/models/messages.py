@@ -37,7 +37,6 @@ class Message:
             WHERE messages.recipient_id = %(id)s
         '''
         results = connectToMySQL(cls.DB).query_db(query, id)
-
         messages = []
         for message in results:
             sender_data = {
