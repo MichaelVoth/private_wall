@@ -35,8 +35,16 @@ def send_message():
 def delete_message():
         #Checks if user id is logged in.
     if session.get('user_id') is None:
-        return redirect('/')
+        return redirect('/report')
     Message.delete_message(request.form['id'])
 
     return redirect('/wall')
+
+
+@app.route('/report')
+def report_user():
+    user_ip = request.remote_addr
+    session.clear()
+
+    return render_template('report.html', ip=user_ip)
 
